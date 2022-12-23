@@ -123,18 +123,13 @@ def post_process(job_name):
     odb_set_whole = odb_assembly.elementSets[' ALL ELEMENTS']
     field = elemStress.getSubset(region=odb_set_whole, position=ELEMENT_NODAL)
 
-    nodalS11 = {}
+    nodal_mises = {}
     for value in field.values:
-        if value.nodeLabel in nodalS11:
-            nodalS11[value.nodeLabel].append(value.data[0])
-        else:
-            nodalS11.update({value.nodeLabel: [value.data[0]]})
-    for key in nodalS11:
-        nodalS11.update({key: sum(nodalS11[key]) / len(nodalS11[key])})
-    return nodalS11
+        nodal_mises.update({value.nodeLabel: value.mises})
+    return nodal_mises
 
 
-def output_csv(mypart, results_location, nodalS11, filename):
+def output_csv(mypart, results_location, nodal_mises, filename):
     # Exterior nodes
     node_object_external = mypart.sets['all_faces'].nodes
     node_labels_external = [node.label for node in node_object_external]
@@ -145,9 +140,9 @@ def output_csv(mypart, results_location, nodalS11, filename):
 
     # Print_result
     with open(results_location + filename + '_nodes.csv', 'w') as f:
-        f.write('nodeid,nodetype,x,y,z,s11\n')
-        for node_s11 in nodalS11.items():
-            nodeid, s11 = node_s11[0], node_s11[-1]
+        f.write('nodeid,nodetype,x,y,z,mises\n')
+        for node_mises in nodal_mises.items():
+            nodeid, mises = node_mises[0], node_mises[-1]
             meshnode_object = mypart.nodes[nodeid - 1]
             x, y, z = meshnode_object.coordinates[0], meshnode_object.coordinates[1], meshnode_object.coordinates[2]
             if nodeid in node_labels_external:
@@ -159,7 +154,7 @@ def output_csv(mypart, results_location, nodalS11, filename):
                     nodetype = 1
             else:
                 nodetype = 0
-            f.write('%d,%d,%f,%f,%f,%f\n' % (nodeid, nodetype, x, y, z, s11))
+            f.write('%d,%d,%f,%f,%f,%f\n' % (nodeid, nodetype, x, y, z, mises))
 
     with open(results_location + filename + '_elements.csv', 'w') as f:
         f.write('elementid,node1,node2,node3,node4\n')

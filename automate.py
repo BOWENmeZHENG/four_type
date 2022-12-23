@@ -24,6 +24,6 @@ def run_model(r_out, r_in, width, spoke_width, num_spokes, init_angle, material_
         ax.set_xlabel('x')
         ax.set_ylabel('y')
         ax.set_zlabel('z')
-        sca = ax.scatter(x, y, z, c=nodes.s11)
+        sca = ax.scatter(x, y, z, c=nodes.mises)
         plt.colorbar(sca, pad=0.1)
         plt.show()

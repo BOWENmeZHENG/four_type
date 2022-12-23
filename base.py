@@ -12,6 +12,7 @@ from sketch import *
 from visualization import *
 from connectorBehavior import *
 
+
 # Constants
 r_out = 0.3
 r_in = 0.2
@@ -147,25 +148,44 @@ frame = odb.steps[odb_step1.name].frames[-1]
 elemStress = frame.fieldOutputs['S']
 odb_set_whole = odb_assembly.elementSets[' ALL ELEMENTS']
 field = elemStress.getSubset(region=odb_set_whole, position=ELEMENT_NODAL)
-
-# nodalS11, nodalS22, nodalS33, nodalS12, nodalS13, nodalS23 = {}, {}, {}, {}, {}, {}
-
-def make_dict(comp):
+def make_mises():
     nodal_dict = {}
     for value in field.values:
-        if value.nodeLabel in nodal_dict:
-            nodal_dict[value.nodeLabel].append(value.data[comp])
-        else:
-            nodal_dict.update({value.nodeLabel: [value.data[comp]]})
-    for key in nodal_dict:
-        nodal_dict.update({key: sum(nodal_dict[key]) / len(nodal_dict[key])})
+        nodal_dict.update({value.nodeLabel: value.mises})
     return nodal_dict
+nodal_mises = make_mises()
+print(max(nodal_mises.values()))
+# elemStress = frame.fieldOutputs['S'].getSubset(position=CENTROID)
+# mStress = elemStress.getScalarField(invariant=MISES,)
+# dat = mStress.bulkDataBlocks[0]
+# print(len(dat.data))
+
+# odb_set_whole = odb_assembly.elementSets[' ALL ELEMENTS']
+# field = elemStress.getSubset(region=odb_set_whole, position=ELEMENT_NODAL)
+# nodalS11, nodalS22, nodalS33, nodalS12, nodalS13, nodalS23 = {}, {}, {}, {}, {}, {}
+
+# def make_dict(comp):
+#     nodal_dict = {}
+#     for value in field.values:
+#         if value.nodeLabel in nodal_dict:
+#             nodal_dict[value.nodeLabel].append(value.data[comp])
+#         else:
+#             nodal_dict.update({value.nodeLabel: [value.data[comp]]})
+#     for key in nodal_dict:
+#         nodal_dict.update({key: sum(nodal_dict[key]) / len(nodal_dict[key])})
+#     return nodal_dict
+
+# def make_mises():
+#     nodal_dict = {}
+#     for value in field.values:
+#         nodal_dict.update({value.nodeLabel: value.mises})
+#     return nodal_dict
 
 
-nodalS11, nodalS22, nodalS33, nodalS12, nodalS13, nodalS23 = make_dict(0), make_dict(1), make_dict(2), make_dict(3), make_dict(4), make_dict(5)
-
-print(max(nodalS11.values()))
-# print(max(nodalS22.values()))
+# nodalS11, nodalS22, nodalS33, nodalS12, nodalS13, nodalS23 = make_dict(0), make_dict(1), make_dict(2), make_dict(3), make_dict(4), make_dict(5)
+# nodal_mises = make_mises()
+# print(min(nodal_mises.values()))
+# print(nodal_mises[4762])
 # print(max(nodalS33.values()))
 # print(max(nodalS12.values()))
 # print(max(nodalS13.values()))

@@ -23,7 +23,7 @@ init_angle = 90 * np.random.rand(num)  # range: [0, 90]
 for i in range(num):
     run_model(r_out=r_out[i], r_in=r_in[i], width=width[i],
               spoke_width=spoke_width[i], num_spokes=num_spokes[i], init_angle=init_angle[i],
-              material_name=material, load=load[i], meshsize=0.02, vis=False)
+              material_name=material, load=load[i], meshsize=0.02, vis=True)
 
 # move csv files to folder
 files = os.listdir('./')
